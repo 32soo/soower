@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ry.mapper.EmployeeMapper">
+    <resultMap id="getEmployee" type="employee">
+        <id property="empNo" column="empno"></id>
+        <result property="eName" column="ename"></result>
+        <result property="job" column="job"></result>
+        <result property="hireDate" column="hiredate"></result>
+        <result property="sal" column="sal"></result>
+        <result property="comm" column="comm"></result>
+        <association property="department" javaType="Department">
+            <id property="deptNo" column="deptno"></id>
+            <result property="dName" column="dname"></result>
+            <result property="loc" column="loc"></result>
+        </association>
+    </resultMap>
+    <select id="getAllEmployee" resultMap="getEmployee">
+        select *
+        from employee e,
+             department d
+        where e.deptno = d.deptno
+    </select>
+    <select id="getEmployeeById" resultMap="getEmployee">
+        select *
+        from employee e,
+             department d
+        where e.empno = #{empNo}
+    </select>
+    <insert id="addEmployee" parameterType="employee">
+        INSERT INTO employee(ename, job, hiredate, sal, comm, deptno)
+        VALUES (#{eName}, #{job}, #{hireDate}, #{sal}, #{comm}, #{department.deptNo})
+    </insert>
+    <update id="updateEmployee" parameterType="employee">
+        UPDATE employee
+        SET ename    = #{eName},
+            job      = #{job},
+            hiredate = #{hireDate},
+            sal      = #{sal},
+            comm     = #{comm},
+            deptno   = #{department.deptNo}
+        WHERE empno = #{empNo}
+    </update>
+    <delete id="deleteEmployee" parameterType="employee">
+        delete
+        from employee
+        where empno = #{empNo}
+    </delete>
+    <delete id="deleteEmployees" parameterType="List">
+        delete from employee where empno in
+        <foreach collection="list" item="empnos" index="index" open="(" separator="," close=")"> #{empNo} </foreach>
+    </delete>
+</mapper>
